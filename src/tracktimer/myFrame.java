@@ -2,6 +2,7 @@
 This is where everything happens!
 You enter a starting speed, then every 200m this speed is increased by .5 km/h and the Software beeps
 The software also beeps every 20m.
+This is in Analysis
 TODO: Add Beeps
 TODO: Add Error Message if the speedField is left empty
 This is Beeping
@@ -64,7 +65,9 @@ public class myFrame extends JFrame {
                 {
                     ex1.printStackTrace();
                     //TODO: ADD ERROR MESSAGE
-                    //Delete This
+
+                    //Keep This
+
                 }
 
 
