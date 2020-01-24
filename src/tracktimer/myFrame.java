@@ -1,7 +1,6 @@
 package tracktimer;
 
 import javax.swing.*;
-import java.text.DecimalFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -28,8 +27,14 @@ public class myFrame extends JFrame {
 
             startButton.addActionListener(e->{
                 buttonHandler();
-                speed = Double.parseDouble(speedField.getText()); //get speed input
-                startSpeedLabel.setText(speedField.getText()); //set the label text
+                try {
+                    speed = Double.parseDouble(speedField.getText()); //get speed input
+                    startSpeedLabel.setText(speedField.getText()); //set the label text
+                }catch (Exception ex1)
+                {
+                    ex1.printStackTrace();
+                }
+
                 timer = new java.util.Timer(); //create a new Timer(not swing Timer)
                 timer.scheduleAtFixedRate(new TimerTask() {
                     @Override
@@ -44,7 +49,7 @@ public class myFrame extends JFrame {
                             timeHandler();
                         }
                     }
-                },0,1);
+                },0,1); //Timer without delay and 1ms period
             });
 
             stopButton.addActionListener(e->{
@@ -78,7 +83,7 @@ public class myFrame extends JFrame {
             * TODO: FIND OUT WHAT IS SUPPOSED TO HAPPEN HERE*/
         }
     }
-    void buttonHandler()
+    void buttonHandler() //To make the App less Bug-prone
     {
         startButton.setEnabled(!startButton.isEnabled());
         stopButton.setEnabled(!stopButton.isEnabled());
