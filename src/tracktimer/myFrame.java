@@ -4,7 +4,7 @@ You enter a starting speed, then every 200m this speed is increased by .5 km/h a
 The software also beeps every 20m.
 TODO: Add Beeps
 TODO: Add Error Message if the speedField is left empty
-
+This is Beeping
 The rounding process is a bit weired here:
 eg: 1.12345 should be rounded to 2 decimal points:
 Math.round(1.12345*100)=112
@@ -64,6 +64,7 @@ public class myFrame extends JFrame {
                 {
                     ex1.printStackTrace();
                     //TODO: ADD ERROR MESSAGE
+                    //Delete This
                 }
 
 
