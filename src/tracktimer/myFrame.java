@@ -14,6 +14,7 @@ Math.round(1.12345*100)=112
 package tracktimer;
 //Imports handled by IntelliJ
 import javax.swing.*;
+import java.awt.event.WindowFocusListener;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -41,11 +42,12 @@ public class myFrame extends JFrame {
         add(rootPanel);
 
             startButton.addActionListener(e->{
-                buttonHandler();
+
                 try {
                     speed = Double.parseDouble(speedField.getText()); //get speed input
                     startSpeedLabel.setText(speedField.getText()); //set the label text
                     currentSpeedLabel.setText(Double.toString(speed));
+                    buttonHandler();
                     timer = new java.util.Timer(); //create a new Timer(not swing Timer)
                     timer.scheduleAtFixedRate(new TimerTask() {
                         @Override
@@ -64,7 +66,7 @@ public class myFrame extends JFrame {
                 }catch (Exception ex1)
                 {
                     ex1.printStackTrace();
-                    //TODO: ADD ERROR MESSAGE
+                    JOptionPane.showMessageDialog(null, ex1.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 
 
                 }
