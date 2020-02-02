@@ -2,10 +2,6 @@
 This is where everything happens!
 You enter a starting speed, then every 200m this speed is increased by .5 km/h and the Software beeps
 The software also beeps every 20m.
-
-TODO: Add Beeps
-TODO: Add Error Message if the speedField is left empty
-
 The rounding process is a bit weired here:
 eg: 1.12345 should be rounded to 2 decimal points:
 Math.round(1.12345*100)=112
@@ -13,8 +9,12 @@ Math.round(1.12345*100)=112
 */
 package tracktimer;
 //Imports handled by IntelliJ
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
 import javax.swing.*;
-import java.awt.event.WindowFocusListener;
+import java.awt.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -37,6 +37,7 @@ public class myFrame extends JFrame {
     double elapsedTimeCounter = 0; //timer in ms
     double elapsedTime = 0; //rounded Timer
     int meterCounter = 0; //counts, how often a runner has passed 20m
+    public static float sampleRate = 8000f; //Sample rate for beeps
 
     myFrame(){
         add(rootPanel);
@@ -59,7 +60,11 @@ public class myFrame extends JFrame {
                             timeLabel.setText(Double.toString(elapsedTime));
                             if(elapsedTime ==length)
                             {
-                                timeHandler();
+                                try {
+                                    timeHandler();
+                                } catch (LineUnavailableException ex) {
+                                    ex.printStackTrace();
+                                }
                             }
                         }
                     },0,1); //Timer without delay and 1ms period
@@ -101,22 +106,21 @@ public class myFrame extends JFrame {
         intervallLabel.setText(Double.toString(length));
 
     }
-    void timeHandler()
-    {
-        if(meterCounter == 10) //reached 200m
+    void timeHandler() throws LineUnavailableException {
+        if(meterCounter == 9) //reached 200m
         {
             elapsedTimeCounter =0; //Reset Variables
             meterCounter = 0;
             speed += 0.5; //increase Speed
             currentSpeedLabel.setText(Double.toString(speed));
-            //TODO: ADD BEEP
+            tone(500,100);
         }else{
             //reached 20 more meters
             meterCounter++;
             elapsedTimeCounter =0; // reset Timer
 
             System.out.println(meterCounter); //DEBUGGING
-            //TODO: ADD BEEP
+            tone(1000,100);
         }
     }
     void buttonHandler() //To make the App less Bug-prone
@@ -125,5 +129,38 @@ public class myFrame extends JFrame {
         stopButton.setEnabled(!stopButton.isEnabled());
         resetButton.setEnabled(!resetButton.isEnabled());
         speedField.setEnabled(!speedField.isEnabled());
+    }
+    public static void tone(int hz, int msecs) {
+        Thread beep = new Thread(()->{
+            try {
+                tone(hz, msecs, 1.0);
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+            }
+        });
+        beep.start();
+    }
+    public static void tone(int hz, int msecs, double vol)
+            throws LineUnavailableException
+    {
+        byte[] buf = new byte[1];
+        AudioFormat af =
+                new AudioFormat(
+                        sampleRate, // sampleRate
+                        8,           // sampleSizeInBits
+                        1,           // channels
+                        true,        // signed
+                        false);      // bigEndian
+        SourceDataLine sdl = AudioSystem.getSourceDataLine(af);
+        sdl.open(af);
+        sdl.start();
+        for (int i=0; i < msecs*8; i++) {
+            double angle = i / (sampleRate / hz) * 2.0 * Math.PI;
+            buf[0] = (byte)(Math.sin(angle) * 127.0 * vol);
+            sdl.write(buf,0,1);
+        }
+        sdl.drain();
+        sdl.stop();
+        sdl.close();
     }
 }
